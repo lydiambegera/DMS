@@ -1,0 +1,95 @@
+
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+{% block title %}surveys{% endblock %}
+{% block body %}
+<div class="content-section">
+  <div class="outer">
+    <div class="middle">
+      <div class="inner">
+        <br/>
+        {{ utils.flashed_messages() }}
+        <br/>
+        <h1 style="text-align:center;">Site surveys</h1>
+        {% if surveys %}
+          <hr class="intro-divider">
+          <div class="center">
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="15%"> Agent name </th>
+                  <th width="15%"> Business name </th>
+                  <th width="15%"> Location </th>
+                  <th width="15%"> Business type </th>
+                  <th width="15%"> Status </th>
+                  <th width="15%"> Due date </th>
+                  <th width="8%"> Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for survey in surveys %}
+                <tr>
+              {% if survey.status !='Approved' %}
+                  <td> {{ survey.agent_name }} </td>
+                  <td> {{ survey.business_name }} </td>
+                  <td> {{ survey.site_location }} </td>
+                  <td> {{ survey.business_type }} </td>
+                {% if survey.due_date %}
+
+                    {% if current_date > survey.due_date %}
+                      <td> <span class="text-red"> Overdue </span></td>
+                    {% else %}
+                      <td> {{ survey.status }} </td>
+                    {% endif %}
+                  <td> {{ survey.due_date }} </td>
+
+                {% else %}
+                  <td> {{ survey.status }} </td>
+                 <td> - </td>
+                {% endif %}
+                  <td>
+                    <a href="#">
+                      <i class="fa fa-pencil"></i> Edit
+                    </a>
+                  </td>
+
+                  <td>
+                    <a href="{{ url_for('sites.send_to_backhaul', id=survey.id) }}">
+                    <button type="button" class="btn btn-block btn-primary btn-sm"> Send to backhaul </button>
+                    </a>
+                  </td>
+                  {% if survey.status == "None" %}
+                  <td>
+
+                    <button type="button" class="btn btn-block btn-warning btn-primary btn-sm ">Confirm</button>
+
+                  </td>
+                  {% else %}
+                  <td>
+                    <a href="{{ url_for('sites.confirm_backhaul', id=survey.id) }}">
+                    <button type="button" class="btn btn-block btn-primary btn-sm">Confirm</button>
+                    </a>
+                  </td>
+                  {% endif %}
+                {% endif %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div style="text-align: center">
+        {% else %}
+          <div style="text-align: center">
+            <h3> No site surveys have been added. </h3>
+            <hr class="intro-divider">
+        {% endif %}
+          <a href="{{ url_for('sites.add_survey') }}" class="btn btn-default btn-lg">
+            <i class="fa fa-plus"></i>
+            Add Survey
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
